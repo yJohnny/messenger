@@ -1,0 +1,38 @@
+name: messenger
+description: "A new Flutter project."
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  go_router: ^14.8.0
+  flutter_screenutil: ^5.9.3
+  flutter_bloc: ^9.0.0
+  intl: ^0.19.0
+  equatable: ^2.0.7
+  get_it: ^8.0.3
+  google_fonts: ^6.2.1
+  firebase_core: ^3.13.1
+  cloud_firestore: ^5.6.8
+  firebase_auth: ^5.5.4
+  firebase_messaging: ^15.2.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+
