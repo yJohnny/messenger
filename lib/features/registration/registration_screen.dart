@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:messenger/constants/app_assets.dart';
 import 'package:messenger/constants/app_colors.dart';
 import 'package:messenger/constants/app_text_styles.dart';
 import 'package:messenger/features/registration/registration_cubit.dart';
 import 'package:messenger/features/registration/registration_state.dart';
+import 'package:messenger/utils/validators.dart';
 import 'package:messenger/widgets/custom_button.dart';
 import 'package:messenger/widgets/custom_text_field.dart';
 
@@ -84,6 +84,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
                       Form(
                         key: formKey,
+                        autovalidateMode:
+                            state.autoValidate
+                                ? AutovalidateMode.onUserInteraction
+                                : null,
                         child: Column(
                           children: [
                             Text(
@@ -104,6 +108,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             SizedBox(height: 30.h),
                             CustomTextField(
                               textEditingController: nameController,
+                              validator: Validators.validateName,
                               hint: 'Enter name',
                               prefixIcon: Icon(
                                 Icons.person,
@@ -113,6 +118,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             SizedBox(height: 10.h),
                             CustomTextField(
                               textEditingController: emailController,
+                              validator: Validators.validateEmail,
                               hint: 'Enter email',
                               prefixIcon: Icon(
                                 Icons.email,
@@ -122,6 +128,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             SizedBox(height: 10.h),
                             CustomTextField(
                               textEditingController: passwordController,
+                              validator: Validators.validatePassword,
                               hint: 'Enter password',
                               hideText: true,
                               prefixIcon: Icon(
@@ -135,52 +142,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 : CustomButton(
                                   title: 'Register',
                                   onPressed: () async {
-                                    await registrationCubit.register(
-                                      name: nameController.value.text,
-                                      email: emailController.value.text,
-                                      password: passwordController.value.text,
-                                    );
+                                    if (formKey.currentState?.validate() ==
+                                        true) {
+                                      await registrationCubit.register(
+                                        name: nameController.value.text,
+                                        email: emailController.value.text,
+                                        password: passwordController.value.text,
+                                      );
+                                    } else {
+                                      registrationCubit.switchToAutoValidate();
+                                    }
                                   },
                                 ),
                           ],
                         ),
-                      ),
-
-                      Column(
-                        spacing: 10.h,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(child: Divider()),
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 5.w),
-                                child: Text(
-                                  'Or continue with',
-                                  style: AppTextStyles.s20.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                              Expanded(child: Divider()),
-                            ],
-                          ),
-                          InkWell(
-                            onTap: () {},
-                            child: Container(
-                              width: 70.w,
-                              height: 70.h,
-                              decoration: BoxDecoration(
-                                color: AppColors.lightGreen,
-                                shape: BoxShape.circle,
-                              ),
-                              padding: EdgeInsets.all(15.w),
-                              child: Image.asset(
-                                AppAssets.googleLogo,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ],
                       ),
 
                       Row(

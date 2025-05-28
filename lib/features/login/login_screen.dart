@@ -4,9 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:messenger/constants/app_colors.dart';
 import 'package:messenger/constants/app_text_styles.dart';
+import 'package:messenger/constants/screen_paths.dart';
 import 'package:messenger/features/login/login_state.dart';
+import 'package:messenger/utils/validators.dart';
 import 'package:messenger/widgets/custom_button.dart';
 import 'package:messenger/widgets/custom_text_field.dart';
+import '../../constants/app_assets.dart';
 import 'login_cubit.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -45,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   MediaQuery.of(context).padding.bottom,
               padding: EdgeInsets.symmetric(
                 horizontal: 16.w,
-              ).copyWith(top: 300.h, bottom: 50.h),
+              ).copyWith(top: 150.h, bottom: 50.h),
               child: BlocConsumer<LoginCubit, LoginState>(
                 listener: (context, state) {
                   if (state.errMsg != null) {
@@ -81,19 +84,25 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Form(
                         key: formKey,
+                        autovalidateMode:
+                            state.autoValidate
+                                ? AutovalidateMode.onUserInteraction
+                                : null,
                         child: Column(
-                          spacing: 10.h,
                           children: [
                             CustomTextField(
                               textEditingController: emailController,
+                              validator: Validators.validateEmail,
                               hint: 'Enter email',
                               prefixIcon: Icon(
                                 Icons.email,
                                 color: AppColors.darkGreen,
                               ),
                             ),
+                            SizedBox(height: 10.h),
                             CustomTextField(
                               textEditingController: passwordController,
+                              validator: Validators.validatePassword,
                               hint: 'Enter password',
                               hideText: true,
                               prefixIcon: Icon(
@@ -101,47 +110,88 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: AppColors.darkGreen,
                               ),
                             ),
+                            SizedBox(height: 30.h),
+                            state.isLoading
+                                ? LinearProgressIndicator()
+                                : CustomButton(
+                                  title: 'Login',
+                                  onPressed: () async {
+                                    if (formKey.currentState?.validate() ==
+                                        true) {
+                                      await loginCubit.login(
+                                        email: emailController.text,
+                                        password: passwordController.text,
+                                      );
+                                    } else {
+                                      loginCubit.switchToAutoValidate();
+                                    }
+                                  },
+                                ),
                           ],
                         ),
                       ),
+
                       Column(
                         spacing: 10.h,
                         children: [
-                          state.isLoading
-                              ? LinearProgressIndicator()
-                              : CustomButton(
-                                title: 'Login',
-                                onPressed: () async {
-                                  await loginCubit.login(
-                                    email: emailController.value.text,
-                                    password: passwordController.value.text,
-                                  );
-                                },
-                              ),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                'Don\'t have an account?',
-                                style: AppTextStyles.s16.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  context.push('/registration');
-                                },
+                              Expanded(child: Divider()),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5.w),
                                 child: Text(
-                                  'Sign Up',
-                                  style: AppTextStyles.s16.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.darkGreen,
-                                    decoration: TextDecoration.underline,
+                                  'Or continue with',
+                                  style: AppTextStyles.s20.copyWith(
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ),
+                              Expanded(child: Divider()),
                             ],
+                          ),
+                          InkWell(
+                            onTap: () async {
+                              await loginCubit.signInWithGoogle();
+                            },
+                            child: Container(
+                              width: 70.w,
+                              height: 70.h,
+                              decoration: BoxDecoration(
+                                color: AppColors.lightGreen,
+                                shape: BoxShape.circle,
+                              ),
+                              padding: EdgeInsets.all(15.w),
+                              child: Image.asset(
+                                AppAssets.googleLogo,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Don\'t have an account?',
+                            style: AppTextStyles.s16.copyWith(
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              context.push(ScreenPaths.registration);
+                            },
+                            child: Text(
+                              'Sign Up',
+                              style: AppTextStyles.s16.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.darkGreen,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
                           ),
                         ],
                       ),

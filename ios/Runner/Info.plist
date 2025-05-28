@@ -45,5 +45,14 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>keychain-access-groups</key>
+    <array/>
+    <key>UIBackgroundModes</key>
+    <array>
+    <string>fetch</string>
+    <string>remote-notification</string>
+    </array>
+    <key>NSUserNotificationUsageDescription</key>
+    <string>Мы используем уведомления, чтобы информировать вас о важных событиях.</string>
 </dict>
 </plist>
